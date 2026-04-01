@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Claude Code 源码解析</title>
 
-  <!-- Marked.js for Markdown parsing -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
-  <!-- Highlight.js for code syntax highlighting -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -749,6 +744,10 @@
 
   </div>
 
+  <script src="content.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+
   <script>
     // ===== Chapter Data =====
     const CHAPTERS = [
@@ -805,7 +804,7 @@
     }
 
     // ===== Load Chapter =====
-    async function loadChapter(idx) {
+    function loadChapter(idx) {
       if (idx < 0 || idx >= CHAPTERS.length) return;
 
       // Close mobile sidebar
@@ -832,9 +831,8 @@
 
       // Fetch markdown
       try {
-        const res = await fetch(ch.file);
-        if (!res.ok) throw new Error('Failed to fetch');
-        const text = await res.text();
+        const text = MARKDOWN_CONTENT[ch.file];
+        if (!text) throw new Error('Content not found: ' + ch.file);
 
         // Parse markdown
         const html = marked.parse(text);
@@ -864,7 +862,7 @@
 
         // Syntax highlighting
         container.querySelectorAll('pre code').forEach(block => {
-          hljs.highlightElement(block);
+          if (typeof hljs !== 'undefined') hljs.highlightElement(block);
         });
 
         document.getElementById('loading').style.display = 'none';
@@ -881,7 +879,7 @@
 
       } catch (e) {
         document.getElementById('loading').innerHTML = `
-          <div style="color: var(--accent-orange)">加载失败，请检查文件是否存在</div>
+          <div style="color: var(--accent-orange)">内容加载失败: ${e.message}</div>
         `;
       }
     }
