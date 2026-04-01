@@ -943,8 +943,8 @@
         const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
         document.getElementById('progress-bar').style.width = pct + '%';
 
-        // Auto-mark as read when 80% scrolled
-        if (currentChapter >= 0 && pct > 80) {
+        // Auto-mark as read when scrolled to bottom
+        if (currentChapter >= 0 && pct > 95) {
           markRead(currentChapter);
         }
       });
